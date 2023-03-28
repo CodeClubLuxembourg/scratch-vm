@@ -67,8 +67,64 @@ class Scratch3PenBlocks {
         this._onTargetCreated = this._onTargetCreated.bind(this);
         this._onTargetMoved = this._onTargetMoved.bind(this);
 
+        // Initialize WebSocket connection
+        this.connectWebSocket();
+
         runtime.on('targetWasCreated', this._onTargetCreated);
         runtime.on('RUNTIME_DISPOSED', this.clear.bind(this));
+        
+        // Listen for the stop event to close the WebSocket
+        runtime.on(runtime.PROJECT_STOP_ALL, () => {
+            this.closeWebSocket();
+        });
+    }
+
+    /**
+     * 
+     * Connect the WebSocket to the server
+     * 
+     * @memberof Scratch3PenBlocks
+     * 
+     * @returns {void}
+     * 
+     * @private
+     * 
+     * @since 1.0.0
+     * 
+     * @todo Add error handling
+     * 
+     * @todo Add a way to change the server address
+     * 
+     */
+    connectWebSocket() {
+        this.socket = new WebSocket('ws://localhost:8765');
+    
+        this.socket.addEventListener('open', (event) => {
+            console.log('WebSocket connected:', event);
+        });
+
+        this.socket.addEventListener('message', (event) => {
+            console.log('WebSocket message received:', event);
+        });
+
+        this.socket.addEventListener('close', (event) => {
+            console.log('WebSocket connection closed:', event);
+        });
+
+        this.socket.addEventListener('error', (event) => {
+            console.log('WebSocket error:', event);
+
+            // Try to reconnect in 5 seconds
+            setTimeout(() => {
+                this.connectWebSocket();
+            }, 5000);
+        });
+    }
+
+    closeWebSocket() {
+        if (this.socket) {
+            this.socket.close();
+        }
     }
 
     /**
@@ -187,6 +243,18 @@ class Scratch3PenBlocks {
                 const penState = this._getPenState(target);
                 this.runtime.renderer.penLine(penSkinId, penState.penAttributes, oldX, oldY, target.x, target.y);
                 this.runtime.requestRedraw();
+
+                if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+                    const data = {
+                        type: 'goToXY',
+                        target: target.id,
+                        x: target.x,
+                        y: target.y,
+                        oldX: oldX,
+                        oldY: oldY                        
+                    };
+                    this.socket.send(JSON.stringify(data));
+                }
             }
         }
     }
@@ -503,6 +571,8 @@ class Scratch3PenBlocks {
             this.runtime.renderer.penClear(penSkinId);
             this.runtime.requestRedraw();
         }
+        this.closeWebSocket();
+        this.connectWebSocket();
     }
 
     /**
@@ -537,6 +607,15 @@ class Scratch3PenBlocks {
         if (penSkinId >= 0) {
             this.runtime.renderer.penPoint(penSkinId, penState.penAttributes, target.x, target.y);
             this.runtime.requestRedraw();
+        }
+
+        // Add update to the websocket server
+        if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+            const data = {
+                type: 'penDown',
+                target: target.id,
+            };
+            this.socket.send(JSON.stringify(data));
         }
     }
 
