@@ -1,8 +1,26 @@
 ## scratch-vm
 #### Scratch VM is a library for representing, running, and maintaining the state of computer programs written using [Scratch Blocks](https://github.com/LLK/scratch-blocks).
 
-[![Build Status](https://travis-ci.org/LLK/scratch-vm.svg?branch=develop)](https://travis-ci.org/LLK/scratch-vm)
-[![Coverage Status](https://coveralls.io/repos/github/LLK/scratch-vm/badge.svg?branch=develop)](https://coveralls.io/github/LLK/scratch-vm?branch=develop)
+# Information
+![Code Club Luxembourg](https://codeclub.lu/wp-content/themes/codeclub/dist/images/logo_horizontal_9ff16afb.png)
+
+This branch is a fork of the original scratch-vm repository. See the original repository for more information about the scratch-vm project.
+
+Those modification are done for the Code Club Luxembourg project:
+- "Scratch 3.0 for the robot" (https://codeclub.lu/projects/scratch-3-0-for-the-robot/) (Link not available yet)
+- or "Sreatch 3.0 Coding-Is-Art" (https://codeclub.lu/projects/scratch-3-0-coding-is-art/) (Link not available yet)
+
+The purpose of this project is to add the robot control feature to the scratch-vm.
+- Or by editing existing extension like the Pen extension to add the robot control feature.
+- Or by creating a new extension to add the robot control feature.
+
+## Pen Extension modification
+a first attempt is to modify the Pen extension to add the robot control feature. The idea is to add a websocket connection to the robot and send the pen position to the robot. The robot will then move to the pen position. The robot itslef will need to be modified to add the websocket connection and the robot control feature.
+
+## New extension
+a second attempt is to create a new extension to add the robot control feature. The idea is to add a websocket connection to the robot and send the robot control command to the robot. The robot will then move according to the command. The robot itslef will need to be modified to add the websocket connection and the robot control feature.
+
+# Original README.md
 
 ## Installation
 This requires you to have Git and Node.js installed.
@@ -118,4 +136,4 @@ npm run deploy -- -r <your repo url>
 ```
 
 ## Donate
-We provide [Scratch](https://scratch.mit.edu) free of charge, and want to keep it that way! Please consider making a [donation](https://secure.donationpay.org/scratchfoundation/) to support our continued engineering, design, community, and resource development efforts. Donations of any size are appreciated. Thank you!
+[Scratch](https://scratch.mit.edu) is provided free of charge. Please consider making a [donation](https://secure.donationpay.org/scratchfoundation/) to support the continued engineering, design, community, and resource development efforts. Thank you!
