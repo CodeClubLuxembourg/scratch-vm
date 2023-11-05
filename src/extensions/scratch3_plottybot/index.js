@@ -15,7 +15,7 @@ const StageLayering = require('../../engine/stage-layering');
  * @type {string}
  */
 // eslint-disable-next-line max-len
-const blockIconURI = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48dGl0bGU+cGVuLWljb248L3RpdGxlPjxnIHN0cm9rZT0iIzU3NUU3NSIgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Ik04Ljc1MyAzNC42MDJsLTQuMjUgMS43OCAxLjc4My00LjIzN2MxLjIxOC0yLjg5MiAyLjkwNy01LjQyMyA1LjAzLTcuNTM4TDMxLjA2NiA0LjkzYy44NDYtLjg0MiAyLjY1LS40MSA0LjAzMi45NjcgMS4zOCAxLjM3NSAxLjgxNiAzLjE3My45NyA0LjAxNUwxNi4zMTggMjkuNTljLTIuMTIzIDIuMTE2LTQuNjY0IDMuOC03LjU2NSA1LjAxMiIgZmlsbD0iI0ZGRiIvPjxwYXRoIGQ9Ik0yOS40MSA2LjExcy00LjQ1LTIuMzc4LTguMjAyIDUuNzcyYy0xLjczNCAzLjc2Ni00LjM1IDEuNTQ2LTQuMzUgMS41NDYiLz48cGF0aCBkPSJNMzYuNDIgOC44MjVjMCAuNDYzLS4xNC44NzMtLjQzMiAxLjE2NGwtOS4zMzUgOS4zYy4yODItLjI5LjQxLS42NjguNDEtMS4xMiAwLS44NzQtLjUwNy0xLjk2My0xLjQwNi0yLjg2OC0xLjM2Mi0xLjM1OC0zLjE0Ny0xLjgtNC4wMDItLjk5TDMwLjk5IDUuMDFjLjg0NC0uODQgMi42NS0uNDEgNC4wMzUuOTYuODk4LjkwNCAxLjM5NiAxLjk4MiAxLjM5NiAyLjg1NU0xMC41MTUgMzMuNzc0Yy0uNTczLjMwMi0xLjE1Ny41Ny0xLjc2NC44M0w0LjUgMzYuMzgybDEuNzg2LTQuMjM1Yy4yNTgtLjYwNC41My0xLjE4Ni44MzMtMS43NTcuNjkuMTgzIDEuNDQ4LjYyNSAyLjEwOCAxLjI4Mi42Ni42NTggMS4xMDIgMS40MTIgMS4yODcgMi4xMDIiIGZpbGw9IiM0Qzk3RkYiLz48cGF0aCBkPSJNMzYuNDk4IDguNzQ4YzAgLjQ2NC0uMTQuODc0LS40MzMgMS4xNjVsLTE5Ljc0MiAxOS42OGMtMi4xMyAyLjExLTQuNjczIDMuNzkzLTcuNTcyIDUuMDFMNC41IDM2LjM4bC45NzQtMi4zMTYgMS45MjUtLjgwOGMyLjg5OC0xLjIxOCA1LjQ0LTIuOSA3LjU3LTUuMDFsMTkuNzQzLTE5LjY4Yy4yOTItLjI5Mi40MzItLjcwMi40MzItMS4xNjUgMC0uNjQ2LS4yNy0xLjQtLjc4LTIuMTIyLjI1LjE3Mi41LjM3Ny43MzcuNjE0Ljg5OC45MDUgMS4zOTYgMS45ODMgMS4zOTYgMi44NTYiIGZpbGw9IiM1NzVFNzUiIG9wYWNpdHk9Ii4xNSIvPjxwYXRoIGQ9Ik0xOC40NSAxMi44M2MwIC41LS40MDQuOTA1LS45MDQuOTA1cy0uOTA1LS40MDUtLjkwNS0uOTA0YzAtLjUuNDA3LS45MDMuOTA2LS45MDMuNSAwIC45MDQuNDA0LjkwNC45MDR6IiBmaWxsPSIjNTc1RTc1Ii8+PC9nPjwvc3ZnPg==';
+const blockIconURI = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDBtbSIgaGVpZ2h0PSI0MG1tIiB2aWV3Qm94PSIwIDAgNDAgNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgICA8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtNDMuNDU3IC05OC44OTQpIj4KICAgICAgICA8cGF0aCBzdHlsZT0iZmlsbDojYWNkNGI5O2ZpbGwtb3BhY2l0eToxO3N0cm9rZTojMDAwO3N0cm9rZS13aWR0aDoxLjIyNzk0O3N0cm9rZS1saW5lY2FwOmJ1dHQ7c3Ryb2tlLWxpbmVqb2luOm1pdGVyO3N0cm9rZS1kYXNoYXJyYXk6bm9uZTtzdHJva2Utb3BhY2l0eToxIiBkPSJtNDguMTY3IDEzMi44NzkgMjMuMzgxLjEyNXMwLTcuMTU3LjA1NC0xMS4xMTJjLjA1My0zLjk1NSAyLjcyMi04LjYgNi43MjYtOC41MzggNC4wMDMuMDYzLTE3LjgzLS4wNjItMjIuMjYtLjEyNS00LjQzMS0uMDYzLTcuNTggNC44OTctNy43OTQgOS4xMDMtLjIxNCA0LjIwNi0uMTA3IDEwLjU0Ny0uMTA3IDEwLjU0N3oiLz4KICAgICAgICA8cmVjdCBzdHlsZT0iZmlsbDojZmZmO2ZpbGwtb3BhY2l0eToxO3N0cm9rZTojMDAwO3N0cm9rZS13aWR0aDouOTQyNzY2O3N0cm9rZS1saW5lY2FwOnJvdW5kO3N0cm9rZS1saW5lam9pbjptaXRlcjtzdHJva2UtZGFzaGFycmF5Om5vbmU7c3Ryb2tlLW9wYWNpdHk6MTtwYWludC1vcmRlcjpub3JtYWw7c3RvcC1jb2xvcjojMDAwIiB3aWR0aD0iMjkuNzc5IiBoZWlnaHQ9IjMuMDA0IiB4PSI0Ny4xMDMiIHk9IjEwNS41MTIiIHJ5PSIuODIzIi8+CiAgICAgICAgPHJlY3Qgc3R5bGU9ImZpbGw6I2ZmZjtmaWxsLW9wYWNpdHk6MTtzdHJva2U6IzAwMDtzdHJva2Utd2lkdGg6LjkwMzYyNjtzdHJva2UtbGluZWNhcDpyb3VuZDtzdHJva2UtbGluZWpvaW46bWl0ZXI7c3Ryb2tlLWRhc2hhcnJheTpub25lO3N0cm9rZS1vcGFjaXR5OjE7cGFpbnQtb3JkZXI6bm9ybWFsO3N0b3AtY29sb3I6IzAwMCIgd2lkdGg9IjEwLjU5OCIgaGVpZ2h0PSI3Ljc1NSIgeD0iNTUuNDEzIiB5PSIxMDMuNjA3IiByeT0iMCIvPgogICAgICAgIDxwYXRoIHN0eWxlPSJmaWxsOm5vbmU7c3Ryb2tlOiMwMDA7c3Ryb2tlLXdpZHRoOi44NDEzOTE7c3Ryb2tlLWxpbmVjYXA6cm91bmQ7c3Ryb2tlLWxpbmVqb2luOnJvdW5kO3N0cm9rZS1kYXNoYXJyYXk6bm9uZTtzdHJva2Utb3BhY2l0eToxIiBkPSJNNjUuMDE4IDEyMy4xNGMxLjIxNCAyLjU4LS40NTQgNC42NDMtMi40MSAzLjg5My4yODYgMy42MzEtNC4zNDkgMy4wODQtMy45ODMuMTk2LTIuNTMyIDEuNTc2LTQuNTI4LTMuNTY3LTEuNTQ4LTQuMzMxLTEuODg1LTQuMDU3IDIuMzQtNS4yODIgMy4wNDMtMy4xNCIvPgogICAgICAgIDxwYXRoIHN0eWxlPSJmaWxsOiMwMDA7ZmlsbC1vcGFjaXR5OjE7c3Ryb2tlOm5vbmU7c3Ryb2tlLXdpZHRoOjIuMDY7c3Ryb2tlLWxpbmVjYXA6cm91bmQ7c3Ryb2tlLWxpbmVqb2luOm1pdGVyO3N0cm9rZS1kYXNoYXJyYXk6bm9uZTtzdHJva2Utb3BhY2l0eToxO3BhaW50LW9yZGVyOm5vcm1hbDtzdG9wLWNvbG9yOiMwMDAiIGQ9Im0tODAuMjA4LTI1LjM3My0xNS45OTQtMjguNTIyIDMyLjY4OS4zODV6IiB0cmFuc2Zvcm09Im1hdHJpeCguMDg3MDEgLS4wMDE5IC4wMDE2MSAuMTAyMzMgNjcuMzUgMTIyLjM4MikiLz4KICAgICAgICA8cmVjdCBzdHlsZT0iZmlsbDojZmNmZGZmO2ZpbGwtb3BhY2l0eToxO3N0cm9rZTojMDAwO3N0cm9rZS13aWR0aDouNDc4NDA1O3N0cm9rZS1saW5lY2FwOnJvdW5kO3N0cm9rZS1saW5lam9pbjptaXRlcjtzdHJva2UtZGFzaGFycmF5Om5vbmU7c3Ryb2tlLW9wYWNpdHk6MTtwYWludC1vcmRlcjpub3JtYWw7c3RvcC1jb2xvcjojMDAwIiB3aWR0aD0iNC4xMDUiIGhlaWdodD0iMTEuOTkxIiB4PSI1OC4yMzIiIHk9IjEwNS42NiIgcnk9Ii41MDQiLz4KICAgIDwvZz4KPC9zdmc+Cg==';
 
 /**
  * Enum for pen color parameter values.
@@ -42,7 +42,7 @@ const ColorParam = {
  * @param {Runtime} runtime - the runtime instantiating this block package.
  * @constructor
  */
-class Scratch3PenBlocks {
+class Scratch3PlottybotBlocks {
     constructor(runtime) {
         /**
          * The runtime instantiating this block package.
@@ -116,7 +116,7 @@ class Scratch3PenBlocks {
      * 
      * Connect the WebSocket to the server
      * 
-     * @memberof Scratch3PenBlocks
+     * @memberof Scratch3PlottybotBlocks
      * 
      * @returns {void}
      * 
@@ -209,8 +209,8 @@ class Scratch3PenBlocks {
     _clampPenSize(requestedSize) {
         return MathUtil.clamp(
             requestedSize,
-            Scratch3PenBlocks.PEN_SIZE_RANGE.min,
-            Scratch3PenBlocks.PEN_SIZE_RANGE.max
+            Scratch3PlottybotBlocks.PEN_SIZE_RANGE.min,
+            Scratch3PlottybotBlocks.PEN_SIZE_RANGE.max
         );
     }
 
@@ -235,10 +235,10 @@ class Scratch3PenBlocks {
      * @private
      */
     _getPenState(target) {
-        let penState = target.getCustomState(Scratch3PenBlocks.STATE_KEY);
+        let penState = target.getCustomState(Scratch3PlottybotBlocks.STATE_KEY);
         if (!penState) {
-            penState = Clone.simple(Scratch3PenBlocks.DEFAULT_PEN_STATE);
-            target.setCustomState(Scratch3PenBlocks.STATE_KEY, penState);
+            penState = Clone.simple(Scratch3PlottybotBlocks.DEFAULT_PEN_STATE);
+            target.setCustomState(Scratch3PlottybotBlocks.STATE_KEY, penState);
         }
         return penState;
     }
@@ -252,9 +252,9 @@ class Scratch3PenBlocks {
      */
     _onTargetCreated(newTarget, sourceTarget) {
         if (sourceTarget) {
-            const penState = sourceTarget.getCustomState(Scratch3PenBlocks.STATE_KEY);
+            const penState = sourceTarget.getCustomState(Scratch3PlottybotBlocks.STATE_KEY);
             if (penState) {
-                newTarget.setCustomState(Scratch3PenBlocks.STATE_KEY, Clone.simple(penState));
+                newTarget.setCustomState(Scratch3PlottybotBlocks.STATE_KEY, Clone.simple(penState));
                 if (penState.penDown) {
                     newTarget.addListener(RenderedTarget.EVENT_TARGET_MOVED, this._onTargetMoved);
                 }
@@ -386,11 +386,11 @@ class Scratch3PenBlocks {
      */
     getInfo() {
         return {
-            id: 'pen',
+            id: 'plottybot',
             name: formatMessage({
-                id: 'pen.categoryName',
-                default: 'Pen',
-                description: 'Label for the pen extension category'
+                id: 'plottybot.categoryName',
+                default: 'Plottybot',
+                description: 'Label for the plottybot extension category'
             }),
             blockIconURI: blockIconURI,
             blocks: [
@@ -426,18 +426,8 @@ class Scratch3PenBlocks {
                     text: formatMessage({
                         id: 'pen.clear',
                         default: 'erase all',
-                        description: 'erase all pen trails and stamps'
+                        description: 'erase all pen trails'
                     })
-                },
-                {
-                    opcode: 'stamp',
-                    blockType: BlockType.COMMAND,
-                    text: formatMessage({
-                        id: 'pen.stamp',
-                        default: 'stamp',
-                        description: 'render current costume on the background'
-                    }),
-                    filter: [TargetType.SPRITE]
                 },
                 {
                     opcode: 'penDown',
@@ -457,95 +447,6 @@ class Scratch3PenBlocks {
                         default: 'pen up',
                         description: 'stop leaving a trail behind the sprite'
                     }),
-                    filter: [TargetType.SPRITE]
-                },
-                {
-                    opcode: 'setPenColorToColor',
-                    blockType: BlockType.COMMAND,
-                    text: formatMessage({
-                        id: 'pen.setColor',
-                        default: 'set pen color to [COLOR]',
-                        description: 'set the pen color to a particular (RGB) value'
-                    }),
-                    arguments: {
-                        COLOR: {
-                            type: ArgumentType.COLOR
-                        }
-                    },
-                    filter: [TargetType.SPRITE]
-                },
-                {
-                    opcode: 'changePenColorParamBy',
-                    blockType: BlockType.COMMAND,
-                    text: formatMessage({
-                        id: 'pen.changeColorParam',
-                        default: 'change pen [COLOR_PARAM] by [VALUE]',
-                        description: 'change the state of a pen color parameter'
-                    }),
-                    arguments: {
-                        COLOR_PARAM: {
-                            type: ArgumentType.STRING,
-                            menu: 'colorParam',
-                            defaultValue: ColorParam.COLOR
-                        },
-                        VALUE: {
-                            type: ArgumentType.NUMBER,
-                            defaultValue: 10
-                        }
-                    },
-                    filter: [TargetType.SPRITE]
-                },
-                {
-                    opcode: 'setPenColorParamTo',
-                    blockType: BlockType.COMMAND,
-                    text: formatMessage({
-                        id: 'pen.setColorParam',
-                        default: 'set pen [COLOR_PARAM] to [VALUE]',
-                        description: 'set the state for a pen color parameter e.g. saturation'
-                    }),
-                    arguments: {
-                        COLOR_PARAM: {
-                            type: ArgumentType.STRING,
-                            menu: 'colorParam',
-                            defaultValue: ColorParam.COLOR
-                        },
-                        VALUE: {
-                            type: ArgumentType.NUMBER,
-                            defaultValue: 50
-                        }
-                    },
-                    filter: [TargetType.SPRITE]
-                },
-                {
-                    opcode: 'changePenSizeBy',
-                    blockType: BlockType.COMMAND,
-                    text: formatMessage({
-                        id: 'pen.changeSize',
-                        default: 'change pen size by [SIZE]',
-                        description: 'change the diameter of the trail left by a sprite'
-                    }),
-                    arguments: {
-                        SIZE: {
-                            type: ArgumentType.NUMBER,
-                            defaultValue: 1
-                        }
-                    },
-                    filter: [TargetType.SPRITE]
-                },
-                {
-                    opcode: 'setPenSizeTo',
-                    blockType: BlockType.COMMAND,
-                    text: formatMessage({
-                        id: 'pen.setSize',
-                        default: 'set pen size to [SIZE]',
-                        description: 'set the diameter of a trail left by a sprite'
-                    }),
-                    arguments: {
-                        SIZE: {
-                            type: ArgumentType.NUMBER,
-                            defaultValue: 1
-                        }
-                    },
                     filter: [TargetType.SPRITE]
                 },
                 /* Legacy blocks, should not be shown in flyout */
@@ -673,19 +574,7 @@ class Scratch3PenBlocks {
         this.connectWebSocket();
     }
 
-    /**
-     * The pen "stamp" block stamps the current drawable's image onto the pen layer.
-     * @param {object} args - the block arguments.
-     * @param {object} util - utility object provided by the runtime.
-     */
-    stamp(args, util) {
-        const penSkinId = this._getPenLayerID();
-        if (penSkinId >= 0) {
-            const target = util.target;
-            this.runtime.renderer.penStamp(penSkinId, target.drawableID);
-            this.runtime.requestRedraw();
-        }
-    }
+
 
     /**
      * The pen "pen down" block causes the target to leave pen trails on future motion.
@@ -732,31 +621,7 @@ class Scratch3PenBlocks {
         }
     }
 
-    /**
-     * The pen "set pen color to {color}" block sets the pen to a particular RGB color.
-     * The transparency is reset to 0.
-     * @param {object} args - the block arguments.
-     *  @property {int} COLOR - the color to set, expressed as a 24-bit RGB value (0xRRGGBB).
-     * @param {object} util - utility object provided by the runtime.
-     */
-    setPenColorToColor(args, util) {
-        const penState = this._getPenState(util.target);
-        const rgb = Cast.toRgbColorObject(args.COLOR);
-        const hsv = Color.rgbToHsv(rgb);
-        penState.color = (hsv.h / 360) * 100;
-        penState.saturation = hsv.s * 100;
-        penState.brightness = hsv.v * 100;
-        if (rgb.hasOwnProperty('a')) {
-            penState.transparency = 100 * (1 - (rgb.a / 255.0));
-        } else {
-            penState.transparency = 0;
-        }
 
-        // Set the legacy "shade" value the same way scratch 2 did.
-        penState._shade = penState.brightness / 2;
-
-        this._updatePenColor(penState);
-    }
 
     /**
      * Update the cached color from the color, saturation, brightness and transparency values
@@ -802,54 +667,6 @@ class Scratch3PenBlocks {
                 log.warn(`Tried to set or change unknown color parameter: ${param}`);
         }
         this._updatePenColor(penState);
-    }
-
-    /**
-     * The "change pen {ColorParam} by {number}" block changes one of the pen's color parameters
-     * by a given amound.
-     * @param {object} args - the block arguments.
-     *  @property {ColorParam} COLOR_PARAM - the name of the selected color parameter.
-     *  @property {number} VALUE - the amount to change the selected parameter by.
-     * @param {object} util - utility object provided by the runtime.
-     */
-    changePenColorParamBy(args, util) {
-        const penState = this._getPenState(util.target);
-        this._setOrChangeColorParam(args.COLOR_PARAM, Cast.toNumber(args.VALUE), penState, true);
-    }
-
-    /**
-     * The "set pen {ColorParam} to {number}" block sets one of the pen's color parameters
-     * to a given amound.
-     * @param {object} args - the block arguments.
-     *  @property {ColorParam} COLOR_PARAM - the name of the selected color parameter.
-     *  @property {number} VALUE - the amount to set the selected parameter to.
-     * @param {object} util - utility object provided by the runtime.
-     */
-    setPenColorParamTo(args, util) {
-        const penState = this._getPenState(util.target);
-        this._setOrChangeColorParam(args.COLOR_PARAM, Cast.toNumber(args.VALUE), penState, false);
-    }
-
-    /**
-     * The pen "change pen size by {number}" block changes the pen size by the given amount.
-     * @param {object} args - the block arguments.
-     *  @property {number} SIZE - the amount of desired size change.
-     * @param {object} util - utility object provided by the runtime.
-     */
-    changePenSizeBy(args, util) {
-        const penAttributes = this._getPenState(util.target).penAttributes;
-        penAttributes.diameter = this._clampPenSize(penAttributes.diameter + Cast.toNumber(args.SIZE));
-    }
-
-    /**
-     * The pen "set pen size to {number}" block sets the pen size to the given amount.
-     * @param {object} args - the block arguments.
-     *  @property {number} SIZE - the amount of desired size change.
-     * @param {object} util - utility object provided by the runtime.
-     */
-    setPenSizeTo(args, util) {
-        const penAttributes = this._getPenState(util.target).penAttributes;
-        penAttributes.diameter = this._clampPenSize(Cast.toNumber(args.SIZE));
     }
 
     /* LEGACY OPCODES */
@@ -944,4 +761,4 @@ class Scratch3PenBlocks {
     }
 }
 
-module.exports = Scratch3PenBlocks;
+module.exports = Scratch3PlottybotBlocks;
