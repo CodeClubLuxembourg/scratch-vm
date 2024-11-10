@@ -43,7 +43,7 @@ const ColorParam = {
  * @constructor
  */
 class Scratch3PenBlocks {
-    constructor(runtime) {
+    constructor (runtime) {
         /**
          * The runtime instantiating this block package.
          * @type {Runtime}
@@ -67,106 +67,15 @@ class Scratch3PenBlocks {
         this._onTargetCreated = this._onTargetCreated.bind(this);
         this._onTargetMoved = this._onTargetMoved.bind(this);
 
-        this.selectedDevice = 'None';
-
         runtime.on('targetWasCreated', this._onTargetCreated);
         runtime.on('RUNTIME_DISPOSED', this.clear.bind(this));
-
-        // Listen for the stop event to close the WebSocket
-        runtime.on(runtime.PROJECT_STOP_ALL, () => {
-            this.closeWebSocket();
-        });
     }
-
-    async fetchAndConnect(index) {
-        try {
-            const response = await fetch('http://192.168.178.192:3000/api/devices');
-            if (!response.ok) {
-                console.error('API not reachable');
-                this.selectedDevice = 'None';
-                return;
-            }
-
-            const deviceList = await response.json();
-            if (typeof deviceList !== 'object') {
-                console.error('Unexpected response format');
-                this.selectedDevice = 'None';
-                return;
-            }
-
-            const entries = Object.entries(deviceList);
-            if (!entries[index - 1]) {
-                console.error('Index out of range');
-                this.selectedDevice = 'None';
-                return;
-            }
-
-            const [name, ip] = entries[index - 1];
-            console.log(`Connecting to ${name} at ${ip}`);
-            this.selectedDevice = name;
-            this.connectWebSocket(ip);
-        } catch (error) {
-            console.error('Failed to fetch or connect:', error);
-            this.selectedDevice = 'None';
-        }
-    }
-
-
-    /**
-     * 
-     * Connect the WebSocket to the server
-     * 
-     * @memberof Scratch3PenBlocks
-     * 
-     * @returns {void}
-     * 
-     * @private
-     * 
-     * @since 1.0.0
-     * 
-     * @todo Add error handling
-     * 
-     * @todo Add a way to change the server address
-     * 
-     */
-    connectWebSocket(ip) {
-        this.socket = new WebSocket(`ws://${ip}:8766`);
-
-        this.socket.addEventListener('open', (event) => {
-            console.log('WebSocket connected:', event);
-        });
-
-        this.socket.addEventListener('message', (event) => {
-            console.log('WebSocket message received:', event);
-        });
-
-        this.socket.addEventListener('close', (event) => {
-            console.log('WebSocket connection closed:', event);
-        });
-
-        this.socket.addEventListener('error', (event) => {
-            console.log('WebSocket error:', event);
-
-            // Try to reconnect in 5 seconds
-            setTimeout(() => {
-                this.connectWebSocket(ip);
-            }, 5000);
-        });
-    }
-
-    closeWebSocket() {
-        if (this.socket) {
-            this.socket.close();
-        }
-    }
-
-
 
     /**
      * The default pen state, to be used when a target has no existing pen state.
      * @type {PenState}
      */
-    static get DEFAULT_PEN_STATE() {
+    static get DEFAULT_PEN_STATE () {
         return {
             penDown: false,
             color: 66.66,
@@ -188,15 +97,15 @@ class Scratch3PenBlocks {
      * off-stage sprite can fill it.
      * @type {{min: number, max: number}}
      */
-    static get PEN_SIZE_RANGE() {
-        return { min: 1, max: 1200 };
+    static get PEN_SIZE_RANGE () {
+        return {min: 1, max: 1200};
     }
 
     /**
      * The key to load & store a target's pen-related state.
      * @type {string}
      */
-    static get STATE_KEY() {
+    static get STATE_KEY () {
         return 'Scratch.pen';
     }
 
@@ -206,7 +115,7 @@ class Scratch3PenBlocks {
      * @returns {number} the clamped size.
      * @private
      */
-    _clampPenSize(requestedSize) {
+    _clampPenSize (requestedSize) {
         return MathUtil.clamp(
             requestedSize,
             Scratch3PenBlocks.PEN_SIZE_RANGE.min,
@@ -220,7 +129,7 @@ class Scratch3PenBlocks {
      * @returns {int} the Skin ID of the pen layer, or -1 on failure.
      * @private
      */
-    _getPenLayerID() {
+    _getPenLayerID () {
         if (this._penSkinId < 0 && this.runtime.renderer) {
             this._penSkinId = this.runtime.renderer.createPenSkin();
             this._penDrawableId = this.runtime.renderer.createDrawable(StageLayering.PEN_LAYER);
@@ -234,7 +143,7 @@ class Scratch3PenBlocks {
      * @returns {PenState} the mutable pen state associated with that target. This will be created if necessary.
      * @private
      */
-    _getPenState(target) {
+    _getPenState (target) {
         let penState = target.getCustomState(Scratch3PenBlocks.STATE_KEY);
         if (!penState) {
             penState = Clone.simple(Scratch3PenBlocks.DEFAULT_PEN_STATE);
@@ -250,7 +159,7 @@ class Scratch3PenBlocks {
      * @listens Runtime#event:targetWasCreated
      * @private
      */
-    _onTargetCreated(newTarget, sourceTarget) {
+    _onTargetCreated (newTarget, sourceTarget) {
         if (sourceTarget) {
             const penState = sourceTarget.getCustomState(Scratch3PenBlocks.STATE_KEY);
             if (penState) {
@@ -270,7 +179,7 @@ class Scratch3PenBlocks {
      * @param {boolean} isForce - whether the movement was forced.
      * @private
      */
-    _onTargetMoved(target, oldX, oldY, isForce) {
+    _onTargetMoved (target, oldX, oldY, isForce) {
         // Only move the pen if the movement isn't forced (ie. dragged).
         if (!isForce) {
             const penSkinId = this._getPenLayerID();
@@ -278,18 +187,6 @@ class Scratch3PenBlocks {
                 const penState = this._getPenState(target);
                 this.runtime.renderer.penLine(penSkinId, penState.penAttributes, oldX, oldY, target.x, target.y);
                 this.runtime.requestRedraw();
-
-                if (this.socket && this.socket.readyState === WebSocket.OPEN) {
-                    const data = {
-                        type: 'goToXY',
-                        target: target.id,
-                        x: target.x,
-                        y: target.y,
-                        oldX: oldX,
-                        oldY: oldY
-                    };
-                    this.socket.send(JSON.stringify(data));
-                }
             }
         }
     }
@@ -300,7 +197,7 @@ class Scratch3PenBlocks {
      * @returns {number} the wrapped value.
      * @private
      */
-    _wrapColor(value) {
+    _wrapColor (value) {
         return MathUtil.wrapClamp(value, 0, 100);
     }
 
@@ -309,7 +206,7 @@ class Scratch3PenBlocks {
      * @returns {array} of the localized text and values for each menu element
      * @private
      */
-    _initColorParam() {
+    _initColorParam () {
         return [
             {
                 text: formatMessage({
@@ -353,7 +250,7 @@ class Scratch3PenBlocks {
      * @returns {number} the clamped value.
      * @private
      */
-    _clampColorParam(value) {
+    _clampColorParam (value) {
         return MathUtil.clamp(value, 0, 100);
     }
 
@@ -365,7 +262,7 @@ class Scratch3PenBlocks {
      * @returns {number} the transparency value.
      * @private
      */
-    _alphaToTransparency(alpha) {
+    _alphaToTransparency (alpha) {
         return (1.0 - alpha) * 100.0;
     }
 
@@ -377,14 +274,14 @@ class Scratch3PenBlocks {
      * @returns {number} the alpha value.
      * @private
      */
-    _transparencyToAlpha(transparency) {
+    _transparencyToAlpha (transparency) {
         return 1.0 - (transparency / 100.0);
     }
 
     /**
      * @returns {object} metadata for this extension and its blocks.
      */
-    getInfo() {
+    getInfo () {
         return {
             id: 'pen',
             name: formatMessage({
@@ -394,32 +291,6 @@ class Scratch3PenBlocks {
             }),
             blockIconURI: blockIconURI,
             blocks: [
-                {
-                    opcode: 'connectToPlotty',
-                    blockType: BlockType.COMMAND,
-                    text: 'Connect to Plotty [INDEX]',
-                    arguments: {
-                        INDEX: {
-                            type: ArgumentType.NUMBER,
-                            defaultValue: 1
-                        }
-                    }
-                },
-                {
-                    opcode: 'getDeviceName',
-                    blockType: BlockType.REPORTER,
-                    text: 'Device name'
-                },
-                {
-                    opcode: 'getConnectionStatus',
-                    blockType: BlockType.REPORTER,
-                    text: 'Connection status'
-                },
-                {
-                    opcode: 'disconnectFromPlotty',
-                    blockType: BlockType.COMMAND,
-                    text: 'Disconnect from Plotty'
-                },
                 {
                     opcode: 'clear',
                     blockType: BlockType.COMMAND,
@@ -623,54 +494,15 @@ class Scratch3PenBlocks {
         };
     }
 
-    // Command block to connect to Plotty
-    connectToPlotty(args) {
-        const index = args.INDEX;
-        this.fetchAndConnect(index); // Assumes fetchAndConnect is an async function wrapped to handle in Scratch
-    }
-
-    // Reporter block for Device name
-    getDeviceName() {
-        return this.selectedDevice; // Assumes this.selectedDevice is set somewhere in your code
-    }
-
-    // Reporter block for Connection status
-    getConnectionStatus() {
-        if (!this.socket) {
-            return 'Not Connected';
-        }
-    
-        switch(this.socket.readyState) {
-            case WebSocket.CONNECTING:
-                return 'Connecting';
-            case WebSocket.OPEN:
-                return 'Connected';
-            case WebSocket.CLOSING:
-                return 'Closing';
-            case WebSocket.CLOSED:
-                return 'Closed';
-            default:
-                return 'Unknown';
-        }
-    }
-    
-
-    // Command block to disconnect from Plotty
-    disconnectFromPlotty() {
-        this.closeWebSocket(); // Assumes closeWebSocket is defined to close the socket
-    }
-
     /**
      * The pen "clear" block clears the pen layer's contents.
      */
-    clear() {
+    clear () {
         const penSkinId = this._getPenLayerID();
         if (penSkinId >= 0) {
             this.runtime.renderer.penClear(penSkinId);
             this.runtime.requestRedraw();
         }
-        this.closeWebSocket();
-        this.connectWebSocket();
     }
 
     /**
@@ -678,7 +510,7 @@ class Scratch3PenBlocks {
      * @param {object} args - the block arguments.
      * @param {object} util - utility object provided by the runtime.
      */
-    stamp(args, util) {
+    stamp (args, util) {
         const penSkinId = this._getPenLayerID();
         if (penSkinId >= 0) {
             const target = util.target;
@@ -692,7 +524,7 @@ class Scratch3PenBlocks {
      * @param {object} args - the block arguments.
      * @param {object} util - utility object provided by the runtime.
      */
-    penDown(args, util) {
+    penDown (args, util) {
         const target = util.target;
         const penState = this._getPenState(target);
 
@@ -706,15 +538,6 @@ class Scratch3PenBlocks {
             this.runtime.renderer.penPoint(penSkinId, penState.penAttributes, target.x, target.y);
             this.runtime.requestRedraw();
         }
-
-        // Add update to the websocket server
-        if (this.socket && this.socket.readyState === WebSocket.OPEN) {
-            const data = {
-                type: 'penDown',
-                target: target.id,
-            };
-            this.socket.send(JSON.stringify(data));
-        }
     }
 
     /**
@@ -722,7 +545,7 @@ class Scratch3PenBlocks {
      * @param {object} args - the block arguments.
      * @param {object} util - utility object provided by the runtime.
      */
-    penUp(args, util) {
+    penUp (args, util) {
         const target = util.target;
         const penState = this._getPenState(target);
 
@@ -739,7 +562,7 @@ class Scratch3PenBlocks {
      *  @property {int} COLOR - the color to set, expressed as a 24-bit RGB value (0xRRGGBB).
      * @param {object} util - utility object provided by the runtime.
      */
-    setPenColorToColor(args, util) {
+    setPenColorToColor (args, util) {
         const penState = this._getPenState(util.target);
         const rgb = Cast.toRgbColorObject(args.COLOR);
         const hsv = Color.rgbToHsv(rgb);
@@ -764,7 +587,7 @@ class Scratch3PenBlocks {
      * @param {PenState} penState - the pen state to update.
      * @private
      */
-    _updatePenColor(penState) {
+    _updatePenColor (penState) {
         const rgb = Color.hsvToRgb({
             h: penState.color * 360 / 100,
             s: penState.saturation / 100,
@@ -784,22 +607,22 @@ class Scratch3PenBlocks {
      * @param {boolean} change - if true change param by value, if false set param to value.
      * @private
      */
-    _setOrChangeColorParam(param, value, penState, change) {
+    _setOrChangeColorParam (param, value, penState, change) {
         switch (param) {
-            case ColorParam.COLOR:
-                penState.color = this._wrapColor(value + (change ? penState.color : 0));
-                break;
-            case ColorParam.SATURATION:
-                penState.saturation = this._clampColorParam(value + (change ? penState.saturation : 0));
-                break;
-            case ColorParam.BRIGHTNESS:
-                penState.brightness = this._clampColorParam(value + (change ? penState.brightness : 0));
-                break;
-            case ColorParam.TRANSPARENCY:
-                penState.transparency = this._clampColorParam(value + (change ? penState.transparency : 0));
-                break;
-            default:
-                log.warn(`Tried to set or change unknown color parameter: ${param}`);
+        case ColorParam.COLOR:
+            penState.color = this._wrapColor(value + (change ? penState.color : 0));
+            break;
+        case ColorParam.SATURATION:
+            penState.saturation = this._clampColorParam(value + (change ? penState.saturation : 0));
+            break;
+        case ColorParam.BRIGHTNESS:
+            penState.brightness = this._clampColorParam(value + (change ? penState.brightness : 0));
+            break;
+        case ColorParam.TRANSPARENCY:
+            penState.transparency = this._clampColorParam(value + (change ? penState.transparency : 0));
+            break;
+        default:
+            log.warn(`Tried to set or change unknown color parameter: ${param}`);
         }
         this._updatePenColor(penState);
     }
@@ -812,7 +635,7 @@ class Scratch3PenBlocks {
      *  @property {number} VALUE - the amount to change the selected parameter by.
      * @param {object} util - utility object provided by the runtime.
      */
-    changePenColorParamBy(args, util) {
+    changePenColorParamBy (args, util) {
         const penState = this._getPenState(util.target);
         this._setOrChangeColorParam(args.COLOR_PARAM, Cast.toNumber(args.VALUE), penState, true);
     }
@@ -825,7 +648,7 @@ class Scratch3PenBlocks {
      *  @property {number} VALUE - the amount to set the selected parameter to.
      * @param {object} util - utility object provided by the runtime.
      */
-    setPenColorParamTo(args, util) {
+    setPenColorParamTo (args, util) {
         const penState = this._getPenState(util.target);
         this._setOrChangeColorParam(args.COLOR_PARAM, Cast.toNumber(args.VALUE), penState, false);
     }
@@ -836,7 +659,7 @@ class Scratch3PenBlocks {
      *  @property {number} SIZE - the amount of desired size change.
      * @param {object} util - utility object provided by the runtime.
      */
-    changePenSizeBy(args, util) {
+    changePenSizeBy (args, util) {
         const penAttributes = this._getPenState(util.target).penAttributes;
         penAttributes.diameter = this._clampPenSize(penAttributes.diameter + Cast.toNumber(args.SIZE));
     }
@@ -847,7 +670,7 @@ class Scratch3PenBlocks {
      *  @property {number} SIZE - the amount of desired size change.
      * @param {object} util - utility object provided by the runtime.
      */
-    setPenSizeTo(args, util) {
+    setPenSizeTo (args, util) {
         const penAttributes = this._getPenState(util.target).penAttributes;
         penAttributes.diameter = this._clampPenSize(Cast.toNumber(args.SIZE));
     }
@@ -859,7 +682,7 @@ class Scratch3PenBlocks {
      *  @property {number} HUE - the amount to set the hue to.
      * @param {object} util - utility object provided by the runtime.
      */
-    setPenHueToNumber(args, util) {
+    setPenHueToNumber (args, util) {
         const penState = this._getPenState(util.target);
         const hueValue = Cast.toNumber(args.HUE);
         const colorValue = hueValue / 2;
@@ -874,7 +697,7 @@ class Scratch3PenBlocks {
      *  @property {number} HUE - the amount of desired hue change.
      * @param {object} util - utility object provided by the runtime.
      */
-    changePenHueBy(args, util) {
+    changePenHueBy (args, util) {
         const penState = this._getPenState(util.target);
         const hueChange = Cast.toNumber(args.HUE);
         const colorChange = hueChange / 2;
@@ -892,7 +715,7 @@ class Scratch3PenBlocks {
      *  @property {number} SHADE - the amount to set the shade to.
      * @param {object} util - utility object provided by the runtime.
      */
-    setPenShadeToNumber(args, util) {
+    setPenShadeToNumber (args, util) {
         const penState = this._getPenState(util.target);
         let newShade = Cast.toNumber(args.SHADE);
 
@@ -913,10 +736,10 @@ class Scratch3PenBlocks {
      *  @property {number} SHADE - the amount of desired shade change.
      * @param {object} util - utility object provided by the runtime.
      */
-    changePenShadeBy(args, util) {
+    changePenShadeBy (args, util) {
         const penState = this._getPenState(util.target);
         const shadeChange = Cast.toNumber(args.SHADE);
-        this.setPenShadeToNumber({ SHADE: penState._shade + shadeChange }, util);
+        this.setPenShadeToNumber({SHADE: penState._shade + shadeChange}, util);
     }
 
     /**
@@ -924,9 +747,9 @@ class Scratch3PenBlocks {
      * @param {object} penState - update the HSV & RGB values in this pen state from its hue & shade values.
      * @private
      */
-    _legacyUpdatePenColor(penState) {
+    _legacyUpdatePenColor (penState) {
         // Create the new color in RGB using the scratch 2 "shade" model
-        let rgb = Color.hsvToRgb({ h: penState.color * 360 / 100, s: 1, v: 1 });
+        let rgb = Color.hsvToRgb({h: penState.color * 360 / 100, s: 1, v: 1});
         const shade = (penState._shade > 100) ? 200 - penState._shade : penState._shade;
         if (shade < 50) {
             rgb = Color.mixRgb(Color.RGB_BLACK, rgb, (10 + shade) / 60);
