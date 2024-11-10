@@ -80,7 +80,7 @@ class Scratch3PlottybotBlocks {
 
     async fetchAndConnect(index) {
         try {
-            const response = await fetch('http://192.168.178.192:3000/api/devices');
+            const response = await fetch(`${window.location.origin}/api/devices`);
             if (!response.ok) {
                 console.error('API not reachable');
                 this.selectedDevice = 'None';
@@ -113,21 +113,21 @@ class Scratch3PlottybotBlocks {
 
 
     /**
-     * 
+     *
      * Connect the WebSocket to the server
-     * 
+     *
      * @memberof Scratch3PlottybotBlocks
-     * 
+     *
      * @returns {void}
-     * 
+     *
      * @private
-     * 
+     *
      * @since 1.0.0
-     * 
+     *
      * @todo Add error handling
-     * 
+     *
      * @todo Add a way to change the server address
-     * 
+     *
      */
     connectWebSocket(ip) {
         this.socket = new WebSocket(`ws://${ip}:8766`);
@@ -157,6 +157,7 @@ class Scratch3PlottybotBlocks {
     closeWebSocket() {
         if (this.socket) {
             this.socket.close();
+            this.socket = null;
         }
     }
 
@@ -540,7 +541,7 @@ class Scratch3PlottybotBlocks {
         if (!this.socket) {
             return 'Not Connected';
         }
-    
+
         switch(this.socket.readyState) {
             case WebSocket.CONNECTING:
                 return 'Connecting';
@@ -554,7 +555,7 @@ class Scratch3PlottybotBlocks {
                 return 'Unknown';
         }
     }
-    
+
 
     // Command block to disconnect from Plotty
     disconnectFromPlotty() {
@@ -618,6 +619,15 @@ class Scratch3PlottybotBlocks {
         if (penState.penDown) {
             penState.penDown = false;
             target.removeListener(RenderedTarget.EVENT_TARGET_MOVED, this._onTargetMoved);
+        }
+
+        // Add update to the websocket server
+        if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+            const data = {
+                type: 'penUp',
+                target: target.id,
+            };
+            this.socket.send(JSON.stringify(data));
         }
     }
 
