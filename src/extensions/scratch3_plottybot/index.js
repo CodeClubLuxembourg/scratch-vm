@@ -18,26 +18,6 @@ const StageLayering = require('../../engine/stage-layering');
 const blockIconURI = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDBtbSIgaGVpZ2h0PSI0MG1tIiB2aWV3Qm94PSIwIDAgNDAgNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgICA8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtNDMuNDU3IC05OC44OTQpIj4KICAgICAgICA8cGF0aCBzdHlsZT0iZmlsbDojYWNkNGI5O2ZpbGwtb3BhY2l0eToxO3N0cm9rZTojMDAwO3N0cm9rZS13aWR0aDoxLjIyNzk0O3N0cm9rZS1saW5lY2FwOmJ1dHQ7c3Ryb2tlLWxpbmVqb2luOm1pdGVyO3N0cm9rZS1kYXNoYXJyYXk6bm9uZTtzdHJva2Utb3BhY2l0eToxIiBkPSJtNDguMTY3IDEzMi44NzkgMjMuMzgxLjEyNXMwLTcuMTU3LjA1NC0xMS4xMTJjLjA1My0zLjk1NSAyLjcyMi04LjYgNi43MjYtOC41MzggNC4wMDMuMDYzLTE3LjgzLS4wNjItMjIuMjYtLjEyNS00LjQzMS0uMDYzLTcuNTggNC44OTctNy43OTQgOS4xMDMtLjIxNCA0LjIwNi0uMTA3IDEwLjU0Ny0uMTA3IDEwLjU0N3oiLz4KICAgICAgICA8cmVjdCBzdHlsZT0iZmlsbDojZmZmO2ZpbGwtb3BhY2l0eToxO3N0cm9rZTojMDAwO3N0cm9rZS13aWR0aDouOTQyNzY2O3N0cm9rZS1saW5lY2FwOnJvdW5kO3N0cm9rZS1saW5lam9pbjptaXRlcjtzdHJva2UtZGFzaGFycmF5Om5vbmU7c3Ryb2tlLW9wYWNpdHk6MTtwYWludC1vcmRlcjpub3JtYWw7c3RvcC1jb2xvcjojMDAwIiB3aWR0aD0iMjkuNzc5IiBoZWlnaHQ9IjMuMDA0IiB4PSI0Ny4xMDMiIHk9IjEwNS41MTIiIHJ5PSIuODIzIi8+CiAgICAgICAgPHJlY3Qgc3R5bGU9ImZpbGw6I2ZmZjtmaWxsLW9wYWNpdHk6MTtzdHJva2U6IzAwMDtzdHJva2Utd2lkdGg6LjkwMzYyNjtzdHJva2UtbGluZWNhcDpyb3VuZDtzdHJva2UtbGluZWpvaW46bWl0ZXI7c3Ryb2tlLWRhc2hhcnJheTpub25lO3N0cm9rZS1vcGFjaXR5OjE7cGFpbnQtb3JkZXI6bm9ybWFsO3N0b3AtY29sb3I6IzAwMCIgd2lkdGg9IjEwLjU5OCIgaGVpZ2h0PSI3Ljc1NSIgeD0iNTUuNDEzIiB5PSIxMDMuNjA3IiByeT0iMCIvPgogICAgICAgIDxwYXRoIHN0eWxlPSJmaWxsOm5vbmU7c3Ryb2tlOiMwMDA7c3Ryb2tlLXdpZHRoOi44NDEzOTE7c3Ryb2tlLWxpbmVjYXA6cm91bmQ7c3Ryb2tlLWxpbmVqb2luOnJvdW5kO3N0cm9rZS1kYXNoYXJyYXk6bm9uZTtzdHJva2Utb3BhY2l0eToxIiBkPSJNNjUuMDE4IDEyMy4xNGMxLjIxNCAyLjU4LS40NTQgNC42NDMtMi40MSAzLjg5My4yODYgMy42MzEtNC4zNDkgMy4wODQtMy45ODMuMTk2LTIuNTMyIDEuNTc2LTQuNTI4LTMuNTY3LTEuNTQ4LTQuMzMxLTEuODg1LTQuMDU3IDIuMzQtNS4yODIgMy4wNDMtMy4xNCIvPgogICAgICAgIDxwYXRoIHN0eWxlPSJmaWxsOiMwMDA7ZmlsbC1vcGFjaXR5OjE7c3Ryb2tlOm5vbmU7c3Ryb2tlLXdpZHRoOjIuMDY7c3Ryb2tlLWxpbmVjYXA6cm91bmQ7c3Ryb2tlLWxpbmVqb2luOm1pdGVyO3N0cm9rZS1kYXNoYXJyYXk6bm9uZTtzdHJva2Utb3BhY2l0eToxO3BhaW50LW9yZGVyOm5vcm1hbDtzdG9wLWNvbG9yOiMwMDAiIGQ9Im0tODAuMjA4LTI1LjM3My0xNS45OTQtMjguNTIyIDMyLjY4OS4zODV6IiB0cmFuc2Zvcm09Im1hdHJpeCguMDg3MDEgLS4wMDE5IC4wMDE2MSAuMTAyMzMgNjcuMzUgMTIyLjM4MikiLz4KICAgICAgICA8cmVjdCBzdHlsZT0iZmlsbDojZmNmZGZmO2ZpbGwtb3BhY2l0eToxO3N0cm9rZTojMDAwO3N0cm9rZS13aWR0aDouNDc4NDA1O3N0cm9rZS1saW5lY2FwOnJvdW5kO3N0cm9rZS1saW5lam9pbjptaXRlcjtzdHJva2UtZGFzaGFycmF5Om5vbmU7c3Ryb2tlLW9wYWNpdHk6MTtwYWludC1vcmRlcjpub3JtYWw7c3RvcC1jb2xvcjojMDAwIiB3aWR0aD0iNC4xMDUiIGhlaWdodD0iMTEuOTkxIiB4PSI1OC4yMzIiIHk9IjEwNS42NiIgcnk9Ii41MDQiLz4KICAgIDwvZz4KPC9zdmc+Cg==';
 
 /**
- * Enum for pen color parameter values.
- * @readonly
- * @enum {string}
- */
-const ColorParam = {
-    COLOR: 'color',
-    SATURATION: 'saturation',
-    BRIGHTNESS: 'brightness',
-    TRANSPARENCY: 'transparency'
-};
-
-/**
- * @typedef {object} PenState - the pen state associated with a particular target.
- * @property {Boolean} penDown - tracks whether the pen should draw for this target.
- * @property {number} color - the current color (hue) of the pen.
- * @property {PenAttributes} penAttributes - cached pen attributes for the renderer. This is the authoritative value for
- *   diameter but not for pen color.
- */
-
-/**
  * Host for the Pen-related blocks in Scratch 3.0
  * @param {Runtime} runtime - the runtime instantiating this block package.
  * @constructor
@@ -68,6 +48,7 @@ class Scratch3PlottybotBlocks {
         this._onTargetMoved = this._onTargetMoved.bind(this);
 
         this.selectedDevice = 'None';
+        this.selectedDeviceIdx = 1; // Default to the first device in the list : we use 1 not 0 to be user friendly
 
         runtime.on('targetWasCreated', this._onTargetCreated);
         runtime.on('RUNTIME_DISPOSED', this.clear.bind(this));
@@ -103,6 +84,7 @@ class Scratch3PlottybotBlocks {
 
             const [name, ip] = entries[index - 1];
             console.log(`Connecting to ${name} at ${ip}`);
+            this.selectedDeviceIdx = index;
             this.selectedDevice = name;
             this.connectWebSocket(ip);
         } catch (error) {
@@ -110,7 +92,6 @@ class Scratch3PlottybotBlocks {
             this.selectedDevice = 'None';
         }
     }
-
 
     /**
      *
@@ -161,7 +142,162 @@ class Scratch3PlottybotBlocks {
         }
     }
 
+    drawShape(args, util) {
 
+        const SIZE = args.SIZE;
+        const SHAPE = args.SHAPE;
+
+        switch (SHAPE) {
+            case 'square':
+                this.drawSquare(args, util);
+                break;
+            case 'circle':
+                this.drawCircle(args, util);
+                break;
+            case 'star':
+                this.drawStar(args, util);
+                break;
+            case 'spiral':
+                this.drawSpiral(args, util);
+                break;
+            case 'heart':
+                this.drawHeart(args, util);
+                break;
+            case 'flower':
+                this.drawFlower(args, util);
+                break;
+            case 'hexagon':
+                this.drawHexagon(args, util);
+                break;
+            case 'wave':
+                this.drawWave(args, util);
+                break;
+            default:
+                console.log('Unknown shape');
+                break;
+        }
+    }
+
+
+
+    movesteps(args, util) {
+        const steps = Cast.toNumber(args.STEPS);
+        const radians = MathUtil.degToRad(90 - util.target.direction);
+        const dx = steps * Math.cos(radians);
+        const dy = steps * Math.sin(radians);
+        util.target.setXY(util.target.x + dx, util.target.y + dy);
+    }
+
+    turnRight(args, util) {
+        const degrees = Cast.toNumber(args.DEGREES);
+        util.target.setDirection(util.target.direction + degrees);
+    }
+
+    turnLeft(args, util) {
+        const degrees = Cast.toNumber(args.DEGREES);
+        util.target.setDirection(util.target.direction - degrees);
+    }
+
+    /**
+     * Draw a square
+     * @param {number} size - the size of the square
+     * @returns {void}
+     * @private
+     * @since 1.0.0
+     *
+     * We will need to move the sprite itself to draw the square to get the pen actually working
+     */
+    drawSquare(args, util) {
+
+        const SIZE = args.SIZE;
+        const angle = 90;
+
+        for (let i = 0; i < 4; i++) {
+            this.movesteps({ STEPS: SIZE }, util);
+            this.turnRight({ DEGREES: angle }, util);
+        }
+
+    }
+
+    drawCircle(args, util) {
+
+        const steps = 18;
+        const angle = 360 / steps;
+        const size = args.SIZE;
+
+        // Draw a circle of diameter size
+        // try to estimate the length of the side of the circle
+        const sideWidth = (size * Math.PI) / steps;
+
+        for (let i = 0; i <= steps; i++) {
+            const stepSize = (i === 0 || i === steps) ? sideWidth / 2 : sideWidth; // Make the first and last steps half the size to center the circle
+            this.movesteps({ STEPS: stepSize }, util);
+            if (i < steps) {
+                this.turnRight({ DEGREES: angle }, util);
+            }
+        }
+    }
+
+    drawStar(args, util) {
+
+        const SIZE = args.SIZE;
+        const angle = 144;
+
+        for (let i = 0; i < 5; i++) {
+            this.movesteps({ STEPS: SIZE }, util);
+            this.turnRight({ DEGREES: angle }, util);
+        }
+
+    }
+
+    drawSpiral(args, util) {
+
+        const SIZE = args.SIZE;
+        const angle = 90;
+
+        for (let i = 0; i < 20; i++) {
+            this.movesteps({ STEPS: SIZE + i * 2 }, util);
+            this.turnRight({ DEGREES: angle }, util);
+        }
+
+    }
+    drawHeart(args, util) {
+        const size = args.SIZE; // Scaling factor for the heart size
+        const steps = 100;       // Number of points to plot for smoothness
+        const angleIncrement = 2 * Math.PI / steps;
+
+        // Initialize t for the parametric heart equation
+        let t = 0;
+
+        // Start drawing the heart shape based on the parametric equations
+        for (let i = 0; i <= steps; i++) {
+            // Calculate the position for the current step along the heart path
+            const x = size * 16 * Math.pow(Math.sin(t), 3);
+            const y = -size * (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
+
+            // Calculate the step size and direction based on the change in position
+            const prevX = i > 0 ? size * 16 * Math.pow(Math.sin(t - angleIncrement), 3) : 0;
+            const prevY = i > 0 ? -size * (13 * Math.cos(t - angleIncrement) - 5 * Math.cos(2 * (t - angleIncrement)) - 2 * Math.cos(3 * (t - angleIncrement)) - Math.cos(4 * (t - angleIncrement))) : 0;
+
+            const stepX = x - prevX;
+            const stepY = y - prevY;
+
+            // Calculate the distance to move to the next point
+            const stepSize = Math.sqrt(stepX * stepX + stepY * stepY);
+
+            // Move forward by the calculated step size
+            this.movesteps({ STEPS: stepSize }, util);
+
+            // Calculate the angle to turn towards the next point and set it
+            if (i < steps) {
+                const angle = Math.atan2(stepY, stepX) * (180 / Math.PI);
+                util.target.setDirection(angle);
+            }
+
+            // Increment t for the next point in the loop
+            t += angleIncrement;
+        }
+    }
 
     /**
      * The default pen state, to be used when a target has no existing pen state.
@@ -182,37 +318,12 @@ class Scratch3PlottybotBlocks {
         };
     }
 
-
-    /**
-     * The minimum and maximum allowed pen size.
-     * The maximum is twice the diagonal of the stage, so that even an
-     * off-stage sprite can fill it.
-     * @type {{min: number, max: number}}
-     */
-    static get PEN_SIZE_RANGE() {
-        return { min: 1, max: 1200 };
-    }
-
     /**
      * The key to load & store a target's pen-related state.
      * @type {string}
      */
     static get STATE_KEY() {
         return 'Scratch.pen';
-    }
-
-    /**
-     * Clamp a pen size value to the range allowed by the pen.
-     * @param {number} requestedSize - the requested pen size.
-     * @returns {number} the clamped size.
-     * @private
-     */
-    _clampPenSize(requestedSize) {
-        return MathUtil.clamp(
-            requestedSize,
-            Scratch3PlottybotBlocks.PEN_SIZE_RANGE.min,
-            Scratch3PlottybotBlocks.PEN_SIZE_RANGE.max
-        );
     }
 
     /**
@@ -296,93 +407,6 @@ class Scratch3PlottybotBlocks {
     }
 
     /**
-     * Wrap a color input into the range (0,100).
-     * @param {number} value - the value to be wrapped.
-     * @returns {number} the wrapped value.
-     * @private
-     */
-    _wrapColor(value) {
-        return MathUtil.wrapClamp(value, 0, 100);
-    }
-
-    /**
-     * Initialize color parameters menu with localized strings
-     * @returns {array} of the localized text and values for each menu element
-     * @private
-     */
-    _initColorParam() {
-        return [
-            {
-                text: formatMessage({
-                    id: 'pen.colorMenu.color',
-                    default: 'color',
-                    description: 'label for color element in color picker for pen extension'
-                }),
-                value: ColorParam.COLOR
-            },
-            {
-                text: formatMessage({
-                    id: 'pen.colorMenu.saturation',
-                    default: 'saturation',
-                    description: 'label for saturation element in color picker for pen extension'
-                }),
-                value: ColorParam.SATURATION
-            },
-            {
-                text: formatMessage({
-                    id: 'pen.colorMenu.brightness',
-                    default: 'brightness',
-                    description: 'label for brightness element in color picker for pen extension'
-                }),
-                value: ColorParam.BRIGHTNESS
-            },
-            {
-                text: formatMessage({
-                    id: 'pen.colorMenu.transparency',
-                    default: 'transparency',
-                    description: 'label for transparency element in color picker for pen extension'
-                }),
-                value: ColorParam.TRANSPARENCY
-
-            }
-        ];
-    }
-
-    /**
-     * Clamp a pen color parameter to the range (0,100).
-     * @param {number} value - the value to be clamped.
-     * @returns {number} the clamped value.
-     * @private
-     */
-    _clampColorParam(value) {
-        return MathUtil.clamp(value, 0, 100);
-    }
-
-    /**
-     * Convert an alpha value to a pen transparency value.
-     * Alpha ranges from 0 to 1, where 0 is transparent and 1 is opaque.
-     * Transparency ranges from 0 to 100, where 0 is opaque and 100 is transparent.
-     * @param {number} alpha - the input alpha value.
-     * @returns {number} the transparency value.
-     * @private
-     */
-    _alphaToTransparency(alpha) {
-        return (1.0 - alpha) * 100.0;
-    }
-
-    /**
-     * Convert a pen transparency value to an alpha value.
-     * Alpha ranges from 0 to 1, where 0 is transparent and 1 is opaque.
-     * Transparency ranges from 0 to 100, where 0 is opaque and 100 is transparent.
-     * @param {number} transparency - the input transparency value.
-     * @returns {number} the alpha value.
-     * @private
-     */
-    _transparencyToAlpha(transparency) {
-        return 1.0 - (transparency / 100.0);
-    }
-
-    /**
      * @returns {object} metadata for this extension and its blocks.
      */
     getInfo() {
@@ -450,77 +474,33 @@ class Scratch3PlottybotBlocks {
                     }),
                     filter: [TargetType.SPRITE]
                 },
-                /* Legacy blocks, should not be shown in flyout */
                 {
-                    opcode: 'setPenShadeToNumber',
+                    opcode: 'drawShape',
                     blockType: BlockType.COMMAND,
-                    text: formatMessage({
-                        id: 'pen.setShade',
-                        default: 'set pen shade to [SHADE]',
-                        description: 'legacy pen blocks - set pen shade'
-                    }),
+                    text: 'Draw [SHAPE] with size [SIZE]',
                     arguments: {
-                        SHADE: {
+                        SHAPE: {
+                            type: ArgumentType.STRING,
+                            menu: 'shapeMenu'
+                        },
+                        SIZE: {
                             type: ArgumentType.NUMBER,
-                            defaultValue: 1
+                            defaultValue: 50
                         }
-                    },
-                    hideFromPalette: true
-                },
-                {
-                    opcode: 'changePenShadeBy',
-                    blockType: BlockType.COMMAND,
-                    text: formatMessage({
-                        id: 'pen.changeShade',
-                        default: 'change pen shade by [SHADE]',
-                        description: 'legacy pen blocks - change pen shade'
-                    }),
-                    arguments: {
-                        SHADE: {
-                            type: ArgumentType.NUMBER,
-                            defaultValue: 1
-                        }
-                    },
-                    hideFromPalette: true
-                },
-                {
-                    opcode: 'setPenHueToNumber',
-                    blockType: BlockType.COMMAND,
-                    text: formatMessage({
-                        id: 'pen.setHue',
-                        default: 'set pen color to [HUE]',
-                        description: 'legacy pen blocks - set pen color to number'
-                    }),
-                    arguments: {
-                        HUE: {
-                            type: ArgumentType.NUMBER,
-                            defaultValue: 1
-                        }
-                    },
-                    hideFromPalette: true
-                },
-                {
-                    opcode: 'changePenHueBy',
-                    blockType: BlockType.COMMAND,
-                    text: formatMessage({
-                        id: 'pen.changeHue',
-                        default: 'change pen color by [HUE]',
-                        description: 'legacy pen blocks - change pen color'
-                    }),
-                    arguments: {
-                        HUE: {
-                            type: ArgumentType.NUMBER,
-                            defaultValue: 1
-                        }
-                    },
-                    hideFromPalette: true
+                    }
                 }
             ],
             menus: {
-                colorParam: {
-                    acceptReporters: true,
-                    items: this._initColorParam()
-                }
+                shapeMenu: [
+                    { text: 'Square', value: 'square' },
+                    { text: 'Circle', value: 'circle' },
+                    { text: 'Star', value: 'star' },
+                    { text: 'Spiral', value: 'spiral' },
+                    { text: 'Heart', value: 'heart' },
+                    { text: 'Flower', value: 'flower' },
+                    { text: 'Hexagon', value: 'hexagon' },
+                    { text: 'Wave', value: 'wave' }
+                ]
             }
         };
     }
@@ -542,7 +522,7 @@ class Scratch3PlottybotBlocks {
             return 'Not Connected';
         }
 
-        switch(this.socket.readyState) {
+        switch (this.socket.readyState) {
             case WebSocket.CONNECTING:
                 return 'Connecting';
             case WebSocket.OPEN:
@@ -555,7 +535,6 @@ class Scratch3PlottybotBlocks {
                 return 'Unknown';
         }
     }
-
 
     // Command block to disconnect from Plotty
     disconnectFromPlotty() {
@@ -571,11 +550,13 @@ class Scratch3PlottybotBlocks {
             this.runtime.renderer.penClear(penSkinId);
             this.runtime.requestRedraw();
         }
-        this.closeWebSocket();
-        this.connectWebSocket();
+
+        /* this.closeWebSocket();
+        if (this.selectedDevice !== 'None') {
+            this.fetchAndConnect(this.selectedDeviceIdx);
+        }
+        */
     }
-
-
 
     /**
      * The pen "pen down" block causes the target to leave pen trails on future motion.
@@ -629,145 +610,6 @@ class Scratch3PlottybotBlocks {
             };
             this.socket.send(JSON.stringify(data));
         }
-    }
-
-
-
-    /**
-     * Update the cached color from the color, saturation, brightness and transparency values
-     * in the provided PenState object.
-     * @param {PenState} penState - the pen state to update.
-     * @private
-     */
-    _updatePenColor(penState) {
-        const rgb = Color.hsvToRgb({
-            h: penState.color * 360 / 100,
-            s: penState.saturation / 100,
-            v: penState.brightness / 100
-        });
-        penState.penAttributes.color4f[0] = rgb.r / 255.0;
-        penState.penAttributes.color4f[1] = rgb.g / 255.0;
-        penState.penAttributes.color4f[2] = rgb.b / 255.0;
-        penState.penAttributes.color4f[3] = this._transparencyToAlpha(penState.transparency);
-    }
-
-    /**
-     * Set or change a single color parameter on the pen state, and update the pen color.
-     * @param {ColorParam} param - the name of the color parameter to set or change.
-     * @param {number} value - the value to set or change the param by.
-     * @param {PenState} penState - the pen state to update.
-     * @param {boolean} change - if true change param by value, if false set param to value.
-     * @private
-     */
-    _setOrChangeColorParam(param, value, penState, change) {
-        switch (param) {
-            case ColorParam.COLOR:
-                penState.color = this._wrapColor(value + (change ? penState.color : 0));
-                break;
-            case ColorParam.SATURATION:
-                penState.saturation = this._clampColorParam(value + (change ? penState.saturation : 0));
-                break;
-            case ColorParam.BRIGHTNESS:
-                penState.brightness = this._clampColorParam(value + (change ? penState.brightness : 0));
-                break;
-            case ColorParam.TRANSPARENCY:
-                penState.transparency = this._clampColorParam(value + (change ? penState.transparency : 0));
-                break;
-            default:
-                log.warn(`Tried to set or change unknown color parameter: ${param}`);
-        }
-        this._updatePenColor(penState);
-    }
-
-    /* LEGACY OPCODES */
-    /**
-     * Scratch 2 "hue" param is equivelant to twice the new "color" param.
-     * @param {object} args - the block arguments.
-     *  @property {number} HUE - the amount to set the hue to.
-     * @param {object} util - utility object provided by the runtime.
-     */
-    setPenHueToNumber(args, util) {
-        const penState = this._getPenState(util.target);
-        const hueValue = Cast.toNumber(args.HUE);
-        const colorValue = hueValue / 2;
-        this._setOrChangeColorParam(ColorParam.COLOR, colorValue, penState, false);
-        this._setOrChangeColorParam(ColorParam.TRANSPARENCY, 0, penState, false);
-        this._legacyUpdatePenColor(penState);
-    }
-
-    /**
-     * Scratch 2 "hue" param is equivelant to twice the new "color" param.
-     * @param {object} args - the block arguments.
-     *  @property {number} HUE - the amount of desired hue change.
-     * @param {object} util - utility object provided by the runtime.
-     */
-    changePenHueBy(args, util) {
-        const penState = this._getPenState(util.target);
-        const hueChange = Cast.toNumber(args.HUE);
-        const colorChange = hueChange / 2;
-        this._setOrChangeColorParam(ColorParam.COLOR, colorChange, penState, true);
-
-        this._legacyUpdatePenColor(penState);
-    }
-
-    /**
-     * Use legacy "set shade" code to calculate RGB value for shade,
-     * then convert back to HSV and store those components.
-     * It is important to also track the given shade in penState._shade
-     * because it cannot be accurately backed out of the new HSV later.
-     * @param {object} args - the block arguments.
-     *  @property {number} SHADE - the amount to set the shade to.
-     * @param {object} util - utility object provided by the runtime.
-     */
-    setPenShadeToNumber(args, util) {
-        const penState = this._getPenState(util.target);
-        let newShade = Cast.toNumber(args.SHADE);
-
-        // Wrap clamp the new shade value the way scratch 2 did.
-        newShade = newShade % 200;
-        if (newShade < 0) newShade += 200;
-
-        // And store the shade that was used to compute this new color for later use.
-        penState._shade = newShade;
-
-        this._legacyUpdatePenColor(penState);
-    }
-
-    /**
-     * Because "shade" cannot be backed out of hsv consistently, use the previously
-     * stored penState._shade to make the shade change.
-     * @param {object} args - the block arguments.
-     *  @property {number} SHADE - the amount of desired shade change.
-     * @param {object} util - utility object provided by the runtime.
-     */
-    changePenShadeBy(args, util) {
-        const penState = this._getPenState(util.target);
-        const shadeChange = Cast.toNumber(args.SHADE);
-        this.setPenShadeToNumber({ SHADE: penState._shade + shadeChange }, util);
-    }
-
-    /**
-     * Update the pen state's color from its hue & shade values, Scratch 2.0 style.
-     * @param {object} penState - update the HSV & RGB values in this pen state from its hue & shade values.
-     * @private
-     */
-    _legacyUpdatePenColor(penState) {
-        // Create the new color in RGB using the scratch 2 "shade" model
-        let rgb = Color.hsvToRgb({ h: penState.color * 360 / 100, s: 1, v: 1 });
-        const shade = (penState._shade > 100) ? 200 - penState._shade : penState._shade;
-        if (shade < 50) {
-            rgb = Color.mixRgb(Color.RGB_BLACK, rgb, (10 + shade) / 60);
-        } else {
-            rgb = Color.mixRgb(rgb, Color.RGB_WHITE, (shade - 50) / 60);
-        }
-
-        // Update the pen state according to new color
-        const hsv = Color.rgbToHsv(rgb);
-        penState.color = 100 * hsv.h / 360;
-        penState.saturation = 100 * hsv.s;
-        penState.brightness = 100 * hsv.v;
-
-        this._updatePenColor(penState);
     }
 }
 
