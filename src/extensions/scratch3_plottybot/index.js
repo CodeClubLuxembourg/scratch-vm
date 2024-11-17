@@ -251,53 +251,127 @@ class Scratch3PlottybotBlocks {
     }
 
     drawSpiral(args, util) {
+        const fullTurns = args.SIZE; // Number of full turns
+        const angle = 12; // Angle to turn at each step (in degrees)
+        const totalSteps = 360 / angle * fullTurns; // Total number of steps to complete the spiral
+        const stepIncrease = 0.1; // Increment in step size for the spiral
+
+        let stepSize = 0; // Initialize step size
+
+        for (let i = 0; i < totalSteps; i++) {
+            this.movesteps({ STEPS: stepSize }, util); // Move forward by the current step size
+            this.turnRight({ DEGREES: angle }, util); // Turn slightly
+            stepSize += stepIncrease; // Gradually increase the step size to create the spiral effect
+        }
+    }
+
+
+    drawHeart(args, util) {
+        const size = args.SIZE / 10; // Scaling factor for the heart size
+        const steps = 35; // Number of points for smoothness
+        const angleIncrement = 2 * Math.PI / steps; // Increment for each step
+
+        // Get the sprite's current position and direction
+        const spriteX = util.target.x;
+        const spriteY = util.target.y;
+        const spriteDirection = 360 - util.target.direction % 360; // Convert to a 0-360 range
+
+        // Compute the horizontal offset
+        const RawoffsetX = 5 * size;
+
+        // Precompute sine and cosine for the rotation
+        const cosTheta = Math.cos(spriteDirection * (Math.PI / 180));
+        const sinTheta = Math.sin(spriteDirection * (Math.PI / 180));
+
+        // Initialize the parametric variable
+        let t = 0;
+
+        // Loop to calculate and transform the heart coordinates
+        for (let i = 0; i <= steps; i++) {
+            // Parametric heart equations
+            const rawX = -size * (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
+            const rawY = size * 16 * Math.pow(Math.sin(t), 3);
+
+            rawX = rawX + RawoffsetX;
+
+            // Rotate the point based on the sprite's direction
+            const rotatedX = rawX * cosTheta - rawY * sinTheta;
+            const rotatedY = rawX * sinTheta + rawY * cosTheta;
+
+            // Translate the point to match the sprite's current position
+            const transformedX = spriteX + rotatedX;
+            const transformedY = spriteY + rotatedY;
+
+            // Set the sprite position to the calculated coordinates
+            util.target.setXY(transformedX, transformedY);
+
+            // Increment t for the next step
+            t += angleIncrement;
+        }
+    }
+
+
+
+    drawFlower(args, util) {
+        const petalCount = args.SIZE; // Number of petals
+        const petalLength = 50; // Length of each petal's arc
+        const petalCurve = 6; // Number of steps for each petal curve
+        const petalCurveAngle = 8; // Angle to turn for each petal curve
+        const halfPetalAngle = petalCurveAngle * petalCurve; // Total angle covered by one petal (both sides)
+        const turnAngle = 360 / petalCount; // Angle to turn between petals
+
+
+        for (let i = 0; i < petalCount; i++) {
+            // Draw one side of the petal
+            for (let j = 0; j < petalCurve; j++) {
+                this.movesteps({ STEPS: petalLength / petalCurve }, util); // Move forward slightly
+                this.turnRight({ DEGREES: petalCurveAngle }, util); // Turn slightly to create the curve
+            }
+
+            // Turn to draw the other side of the petal
+            this.turnRight({ DEGREES: 180 - halfPetalAngle }, util);
+
+            // Draw the other side of the petal
+            for (let j = 0; j < petalCurve; j++) {
+                this.movesteps({ STEPS: petalLength / petalCurve }, util); // Move forward slightly
+                this.turnRight({ DEGREES: petalCurveAngle }, util); // Turn slightly to cur ve back
+            }
+
+            // Turn to start the next petal
+            this.turnRight({ DEGREES: 180 - halfPetalAngle + turnAngle }, util);
+        }
+    }
+
+
+
+    drawHexagon(args, util) {
 
         const SIZE = args.SIZE;
-        const angle = 90;
+        const angle = 60;
 
-        for (let i = 0; i < 20; i++) {
-            this.movesteps({ STEPS: SIZE + i * 2 }, util);
+        for (let i = 0; i < 6; i++) {
+            this.movesteps({ STEPS: SIZE }, util);
             this.turnRight({ DEGREES: angle }, util);
         }
 
     }
-    drawHeart(args, util) {
-        const size = args.SIZE; // Scaling factor for the heart size
-        const steps = 100;       // Number of points to plot for smoothness
-        const angleIncrement = 2 * Math.PI / steps;
 
-        // Initialize t for the parametric heart equation
-        let t = 0;
+    drawWave(args, util) {
+        const amplitude = args.SIZE; // Amplitude of the wave (height of each peak or trough)
+        const waveSegments = 5; // Number of wave peaks and troughs
 
-        // Start drawing the heart shape based on the parametric equations
-        for (let i = 0; i <= steps; i++) {
-            // Calculate the position for the current step along the heart path
-            const x = size * 16 * Math.pow(Math.sin(t), 3);
-            const y = -size * (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
 
-            // Calculate the step size and direction based on the change in position
-            const prevX = i > 0 ? size * 16 * Math.pow(Math.sin(t - angleIncrement), 3) : 0;
-            const prevY = i > 0 ? -size * (13 * Math.cos(t - angleIncrement) - 5 * Math.cos(2 * (t - angleIncrement)) - 2 * Math.cos(3 * (t - angleIncrement)) - Math.cos(4 * (t - angleIncrement))) : 0;
-
-            const stepX = x - prevX;
-            const stepY = y - prevY;
-
-            // Calculate the distance to move to the next point
-            const stepSize = Math.sqrt(stepX * stepX + stepY * stepY);
-
-            // Move forward by the calculated step size
-            this.movesteps({ STEPS: stepSize }, util);
-
-            // Calculate the angle to turn towards the next point and set it
-            if (i < steps) {
-                const angle = Math.atan2(stepY, stepX) * (180 / Math.PI);
-                util.target.setDirection(angle);
-            }
-
-            // Increment t for the next point in the loop
-            t += angleIncrement;
+        for (let i = 0; i < waveSegments; i++) {
+            // Draw upward curve (peak)
+            this.turnLeft({ DEGREES: 45 }, util); // Turn down
+            this.movesteps({ STEPS: amplitude }, util); // Move up by the amplitude
+            this.turnRight({ DEGREES: 90 }, util); // Turn up
+            this.movesteps({ STEPS: amplitude }, util); // Move forward by the amplitude
+            this.turnLeft({ DEGREES: 45 }, util); // Turn down
         }
     }
+
+
 
     /**
      * The default pen state, to be used when a target has no existing pen state.
@@ -505,7 +579,7 @@ class Scratch3PlottybotBlocks {
                         },
                         SIZE: {
                             type: ArgumentType.NUMBER,
-                            defaultValue: 50
+                            defaultValue: 10
                         }
                     }
                 }
