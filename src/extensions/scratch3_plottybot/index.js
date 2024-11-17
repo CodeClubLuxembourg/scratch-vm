@@ -414,7 +414,7 @@ class Scratch3PlottybotBlocks {
             id: 'plottybot',
             name: formatMessage({
                 id: 'plottybot.categoryName',
-                default: 'Plottybot',
+                default: 'PlottyBot',
                 description: 'Label for the plottybot extension category'
             }),
             blockIconURI: blockIconURI,
@@ -422,7 +422,11 @@ class Scratch3PlottybotBlocks {
                 {
                     opcode: 'connectToPlotty',
                     blockType: BlockType.COMMAND,
-                    text: 'Connect to Plotty [INDEX]',
+                    text: formatMessage({
+                        id: 'plottybot.connectToPlotty',
+                        default: 'Connect to Plotty [INDEX]',
+                        description: 'Connect to PlottyBot device'
+                    }),
                     arguments: {
                         INDEX: {
                             type: ArgumentType.NUMBER,
@@ -433,23 +437,35 @@ class Scratch3PlottybotBlocks {
                 {
                     opcode: 'getDeviceName',
                     blockType: BlockType.REPORTER,
-                    text: 'Device name'
+                    text: formatMessage({
+                        id: 'plottybot.getDeviceName',
+                        default: 'Device name',
+                        description: 'Get the name of the connected device'
+                    })
                 },
                 {
                     opcode: 'getConnectionStatus',
                     blockType: BlockType.REPORTER,
-                    text: 'Connection status'
+                    text: formatMessage({
+                        id: 'plottybot.getConnectionStatus',
+                        default: 'Connection status',
+                        description: 'Get the connection status of the device'
+                    })
                 },
                 {
                     opcode: 'disconnectFromPlotty',
                     blockType: BlockType.COMMAND,
-                    text: 'Disconnect from Plotty'
+                    text: formatMessage({
+                        id: 'plottybot.disconnectFromPlotty',
+                        default: 'Disconnect from Plotty',
+                        description: 'Disconnect from PlottyBot device'
+                    })
                 },
                 {
                     opcode: 'clear',
                     blockType: BlockType.COMMAND,
                     text: formatMessage({
-                        id: 'pen.clear',
+                        id: 'plottybot.clear',
                         default: 'erase all',
                         description: 'erase all pen trails'
                     })
@@ -458,7 +474,7 @@ class Scratch3PlottybotBlocks {
                     opcode: 'penDown',
                     blockType: BlockType.COMMAND,
                     text: formatMessage({
-                        id: 'pen.penDown',
+                        id: 'plottybot.penDown',
                         default: 'pen down',
                         description: 'start leaving a trail when the sprite moves'
                     }),
@@ -468,7 +484,7 @@ class Scratch3PlottybotBlocks {
                     opcode: 'penUp',
                     blockType: BlockType.COMMAND,
                     text: formatMessage({
-                        id: 'pen.penUp',
+                        id: 'plottybot.penUp',
                         default: 'pen up',
                         description: 'stop leaving a trail behind the sprite'
                     }),
@@ -477,7 +493,11 @@ class Scratch3PlottybotBlocks {
                 {
                     opcode: 'drawShape',
                     blockType: BlockType.COMMAND,
-                    text: 'Draw [SHAPE] with size [SIZE]',
+                    text: formatMessage({
+                        id: 'plottybot.drawShape',
+                        default: 'Draw [SHAPE] with size [SIZE]',
+                        description: 'Draw a shape with the specified size'
+                    }),
                     arguments: {
                         SHAPE: {
                             type: ArgumentType.STRING,
@@ -492,14 +512,14 @@ class Scratch3PlottybotBlocks {
             ],
             menus: {
                 shapeMenu: [
-                    { text: 'Square', value: 'square' },
-                    { text: 'Circle', value: 'circle' },
-                    { text: 'Star', value: 'star' },
-                    { text: 'Spiral', value: 'spiral' },
-                    { text: 'Heart', value: 'heart' },
-                    { text: 'Flower', value: 'flower' },
-                    { text: 'Hexagon', value: 'hexagon' },
-                    { text: 'Wave', value: 'wave' }
+                    { text: formatMessage({ id: 'plottybot.shapeMenu.square', default: 'Square' }), value: 'square' },
+                    { text: formatMessage({ id: 'plottybot.shapeMenu.circle', default: 'Circle' }), value: 'circle' },
+                    { text: formatMessage({ id: 'plottybot.shapeMenu.star', default: 'Star' }), value: 'star' },
+                    { text: formatMessage({ id: 'plottybot.shapeMenu.spiral', default: 'Spiral' }), value: 'spiral' },
+                    { text: formatMessage({ id: 'plottybot.shapeMenu.heart', default: 'Heart' }), value: 'heart' },
+                    { text: formatMessage({ id: 'plottybot.shapeMenu.flower', default: 'Flower' }), value: 'flower' },
+                    { text: formatMessage({ id: 'plottybot.shapeMenu.hexagon', default: 'Hexagon' }), value: 'hexagon' },
+                    { text: formatMessage({ id: 'plottybot.shapeMenu.wave', default: 'Wave' }), value: 'wave' }
                 ]
             }
         };
