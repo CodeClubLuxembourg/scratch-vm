@@ -47,11 +47,21 @@ class Scratch3PlottybotBlocks {
         this._onTargetCreated = this._onTargetCreated.bind(this);
         this._onTargetMoved = this._onTargetMoved.bind(this);
 
+        this.devices = {}; // Store devices fetched from API
         this.selectedDevice = 'None';
-        this.selectedDeviceIdx = 1; // Default to the first device in the list : we use 1 not 0 to be user friendly
+        this.devicesLoaded = false; // Track if devices are loaded
+
+        this.util = null; // Store the util object to use it later
+
+        this._fetchDevices(); // Fetch devices from the API
+
+        this.socket = null; // WebSocket connection to the server
 
         runtime.on('targetWasCreated', this._onTargetCreated);
-        runtime.on('RUNTIME_DISPOSED', this.clear.bind(this));
+        runtime.on('RUNTIME_DISPOSED', () => {
+            this.clear();
+            this.closeWebSocket(); // Ensure WebSocket is closed cleanly
+        });
 
         // Listen for the stop event to close the WebSocket
         runtime.on(runtime.PROJECT_STOP_ALL, () => {
@@ -59,37 +69,25 @@ class Scratch3PlottybotBlocks {
         });
     }
 
-    async fetchAndConnect(index) {
+    async _fetchDevices() {
         try {
             const response = await fetch(`${window.location.origin}/api/devices`);
             if (!response.ok) {
-                console.error('API not reachable');
-                this.selectedDevice = 'None';
+                console.error('Failed to fetch devices');
                 return;
             }
 
             const deviceList = await response.json();
             if (typeof deviceList !== 'object') {
                 console.error('Unexpected response format');
-                this.selectedDevice = 'None';
                 return;
             }
 
-            const entries = Object.entries(deviceList);
-            if (!entries[index - 1]) {
-                console.error('Index out of range');
-                this.selectedDevice = 'None';
-                return;
-            }
-
-            const [name, ip] = entries[index - 1];
-            console.log(`Connecting to ${name} at ${ip}`);
-            this.selectedDeviceIdx = index;
-            this.selectedDevice = name;
-            this.connectWebSocket(ip);
+            this.devices = deviceList;
+            this.devicesLoaded = true; // Mark devices as loaded
+            console.log('Devices fetched:', this.devices);
         } catch (error) {
-            console.error('Failed to fetch or connect:', error);
-            this.selectedDevice = 'None';
+            console.error('Failed to fetch devices:', error);
         }
     }
 
@@ -115,6 +113,9 @@ class Scratch3PlottybotBlocks {
 
         this.socket.addEventListener('open', (event) => {
             console.log('WebSocket connected:', event);
+            if (this.util) {
+                this.updatePenColorBasedOnConnection(this.util);
+            }
         });
 
         this.socket.addEventListener('message', (event) => {
@@ -123,11 +124,16 @@ class Scratch3PlottybotBlocks {
 
         this.socket.addEventListener('close', (event) => {
             console.log('WebSocket connection closed:', event);
+            if (this.util) {
+                this.updatePenColorBasedOnConnection(this.util);
+            }
         });
 
         this.socket.addEventListener('error', (event) => {
             console.log('WebSocket error:', event);
-
+            if (this.util) {
+                this.updatePenColorBasedOnConnection(this.util);
+            }
             // Try to reconnect in 5 seconds
             setTimeout(() => {
                 this.connectWebSocket(ip);
@@ -177,8 +183,6 @@ class Scratch3PlottybotBlocks {
                 break;
         }
     }
-
-
 
     movesteps(args, util) {
         const steps = Cast.toNumber(args.STEPS);
@@ -401,6 +405,58 @@ class Scratch3PlottybotBlocks {
     }
 
     /**
+     * Update the pen color based on the connection status.
+     * @param {object} util - utility object provided by the runtime.
+     */
+    updatePenColorBasedOnConnection(util) {
+        const target = util.target;
+        const penState = this._getPenState(target);
+
+        // Determine the color based on connection status
+        if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+            penState.color = 0; // Red for connected
+        } else {
+            penState.color = 66.66; // Blue for connected
+        }
+
+        // Set HSV values and update the pen color
+        penState.saturation = 100;
+        penState.brightness = 100;
+        penState.transparency = 0; // Fully opaque
+        this._updatePenColor(penState); // Update pen color based on the pen state
+    }
+
+    /**
+     * Update the cached color from the color, saturation, brightness and transparency values
+     * in the provided PenState object.
+     * @param {PenState} penState - the pen state to update.
+     * @private
+     */
+    _updatePenColor(penState) {
+        const rgb = Color.hsvToRgb({
+            h: penState.color * 360 / 100,
+            s: penState.saturation / 100,
+            v: penState.brightness / 100
+        });
+        penState.penAttributes.color4f[0] = rgb.r / 255.0;
+        penState.penAttributes.color4f[1] = rgb.g / 255.0;
+        penState.penAttributes.color4f[2] = rgb.b / 255.0;
+        penState.penAttributes.color4f[3] = this._transparencyToAlpha(penState.transparency);
+    }
+
+    /**
+     * Convert a pen transparency value to an alpha value.
+     * Alpha ranges from 0 to 1, where 0 is transparent and 1 is opaque.
+     * Transparency ranges from 0 to 100, where 0 is opaque and 100 is transparent.
+     * @param {number} transparency - the input transparency value.
+     * @returns {number} the alpha value.
+     * @private
+     */
+    _transparencyToAlpha(transparency) {
+        return 1.0 - (transparency / 100.0);
+    }
+
+    /**
      * Retrieve the ID of the renderer "Skin" corresponding to the pen layer. If
      * the pen Skin doesn't yet exist, create it.
      * @returns {int} the Skin ID of the pen layer, or -1 on failure.
@@ -421,6 +477,11 @@ class Scratch3PlottybotBlocks {
      * @private
      */
     _getPenState(target) {
+        if (!target || typeof target.getCustomState !== 'function') {
+            console.error('Invalid target or target missing required methods');
+            return null;
+        }
+
         let penState = target.getCustomState(Scratch3PlottybotBlocks.STATE_KEY);
         if (!penState) {
             penState = Clone.simple(Scratch3PlottybotBlocks.DEFAULT_PEN_STATE);
@@ -498,13 +559,13 @@ class Scratch3PlottybotBlocks {
                     blockType: BlockType.COMMAND,
                     text: formatMessage({
                         id: 'plottybot.connectToPlotty',
-                        default: 'Connect to Plotty [INDEX]',
+                        default: 'Connect to Plotty [DEVICE]',
                         description: 'Connect to PlottyBot device'
                     }),
                     arguments: {
-                        INDEX: {
-                            type: ArgumentType.NUMBER,
-                            defaultValue: 1
+                        DEVICE: {
+                            type: ArgumentType.STRING,
+                            menu: 'deviceMenu'
                         }
                     }
                 },
@@ -594,15 +655,49 @@ class Scratch3PlottybotBlocks {
                     { text: formatMessage({ id: 'plottybot.shapeMenu.flower', default: 'Flower' }), value: 'flower' },
                     { text: formatMessage({ id: 'plottybot.shapeMenu.hexagon', default: 'Hexagon' }), value: 'hexagon' },
                     { text: formatMessage({ id: 'plottybot.shapeMenu.wave', default: 'Wave' }), value: 'wave' }
-                ]
+                ],
+                // Dynamically fetch devices each time the menu is shown
+                deviceMenu: {
+                    acceptReporters: false,
+                    items: 'getDeviceMenu'
+                }
             }
         };
     }
 
+    getDeviceMenu() {
+        const menu = [];
+
+        console.log('devices menu is being called');
+
+        if (!this.devicesLoaded) {
+            // Show "Loading..." if devices are not yet fetched
+            menu.push({ text: 'Loading...', value: 'None' });
+        } else if (Object.keys(this.devices).length === 0) {
+            // No devices found
+            menu.push({ text: 'No Devices Found', value: 'None' });
+        } else {
+            // Populate menu with fetched devices
+            for (const [name, ip] of Object.entries(this.devices)) {
+                menu.push({ text: name, value: ip });
+            }
+        }
+
+        return menu;
+    }
+
     // Command block to connect to Plotty
-    connectToPlotty(args) {
-        const index = args.INDEX;
-        this.fetchAndConnect(index); // Assumes fetchAndConnect is an async function wrapped to handle in Scratch
+    connectToPlotty(args, util) {
+        const ip = args.DEVICE; // Dropdown directly provides the IP
+        this.util = util; // Store the util object to use it later
+
+        if (ip === 'None') {
+            console.error('No valid device selected');
+            return;
+        }
+
+        console.log(`Connecting to device at ${ip}`);
+        this.connectWebSocket(ip); // Connect to the WebSocket server
     }
 
     // Reporter block for Device name
@@ -644,12 +739,7 @@ class Scratch3PlottybotBlocks {
             this.runtime.renderer.penClear(penSkinId);
             this.runtime.requestRedraw();
         }
-
-        /* this.closeWebSocket();
-        if (this.selectedDevice !== 'None') {
-            this.fetchAndConnect(this.selectedDeviceIdx);
-        }
-        */
+        this.runtime.requestBlocksUpdate();
     }
 
     /**
