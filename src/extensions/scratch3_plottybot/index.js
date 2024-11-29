@@ -652,6 +652,17 @@ class Scratch3PlottybotBlocks {
                         default: '🛑 STOP!',
                         description: 'Stop the device'
                     })
+                },
+                // Pen Toggle : Pen Down / Pen Up
+                {
+                    opcode: 'penToggle',
+                    blockType: BlockType.COMMAND,
+                    text: formatMessage({
+                        id: 'plottybot.penToggle',
+                        default: '🔧 pen toggle',
+                        description: 'Toggle the pen state'
+                    }),
+                    filter: [TargetType.SPRITE]
                 }
             ],
             menus: {
@@ -818,6 +829,24 @@ class Scratch3PlottybotBlocks {
         if (this.socket && this.socket.readyState === WebSocket.OPEN) {
             const data = {
                 type: 'penUp',
+                target: target.id,
+            };
+            this.socket.send(JSON.stringify(data));
+        }
+    }
+
+    /**
+     * Toggle the pen state on the plottyBot only. THe penToggle command is sent to the Plotter directly
+     * @param {object} args - the block arguments.
+     * @param {object} util - utility object provided by the runtime.
+     */
+    penToggle(args, util) {
+        const target = util.target;
+        const penState = this._getPenState(target);
+
+        if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+            const data = {
+                type: 'penToggle',
                 target: target.id,
             };
             this.socket.send(JSON.stringify(data));
