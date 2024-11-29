@@ -643,6 +643,15 @@ class Scratch3PlottybotBlocks {
                             defaultValue: 10
                         }
                     }
+                },
+                {
+                    opcode: 'stopDevice',
+                    blockType: BlockType.COMMAND,
+                    text: formatMessage({
+                        id: 'plottybot.stop',
+                        default: '🛑 STOP!',
+                        description: 'Stop the device'
+                    })
                 }
             ],
             menus: {
@@ -688,8 +697,10 @@ class Scratch3PlottybotBlocks {
 
     // Command block to connect to Plotty
     connectToPlotty(args, util) {
-        const ip = args.DEVICE; // Dropdown directly provides the IP
+        const ip = args.DEVICE; // Dropdown directly provides the IP address
+
         this.util = util; // Store the util object to use it later
+        this.selectedDevice = Object.keys(this.devices).find(key => this.devices[key] === ip);
 
         if (ip === 'None') {
             console.error('No valid device selected');
@@ -702,7 +713,10 @@ class Scratch3PlottybotBlocks {
 
     // Reporter block for Device name
     getDeviceName() {
-        return this.selectedDevice; // Assumes this.selectedDevice is set somewhere in your code
+        if (!this.socket) {
+            return 'None';
+        }
+        return this.selectedDevice;
     }
 
     // Reporter block for Connection status
@@ -739,7 +753,21 @@ class Scratch3PlottybotBlocks {
             this.runtime.renderer.penClear(penSkinId);
             this.runtime.requestRedraw();
         }
-        this.runtime.requestBlocksUpdate();
+        // this.runtime.requestBlocksUpdate();  this can't be called here bacause it create a exception when doing 'NEW' project asking a full refresh of the page
+    }
+
+    /**
+     * The "stop" block halts the device's movement immediately.
+     * It clears the command queue, ensuring no further instructions
+     * are processed by the plotter.
+     */
+    stopDevice() {
+        if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+            const data = {
+                type: 'stop'
+            };
+            this.socket.send(JSON.stringify(data));
+        }
     }
 
     /**
